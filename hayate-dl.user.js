@@ -1,10 +1,11 @@
-//funkcja zwraca ilość stron w rozdziale// ==UserScript==
-// @name         hayate download testy
+// ==UserScript==
+// @name         hayate download
 // @namespace    http://tampermonkey.net/
-// @version      0.1.3
+// @version      0.1
 // @description  downloads images from hayate
-// @author       Shiro
+// @author       Deru
 // @match        https://reader.hayate.eu/*
+// @grant        none
 // @require      https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js
 // @grant        GM_getValue
@@ -56,7 +57,7 @@ function getNumrPage(){
 				GM_setValue("iteraca", i);
 				location.href="https://reader.hayate.eu/" + mangaData[1] + '/' + mangaData[2] + '/' + mangaData[3] + '/view#' + i;
 			}else{
-				alert("Musisz przejść na stronę nr 1, aby rozpocząć pobieranie");
+			alert("Musisz przejść na stronę nr 1, aby rozpocząć pobieranie");
 			}
         }
     });
@@ -83,4 +84,3 @@ function getNumrPage(){
 		}, 1000);
 	}
 })();
-
