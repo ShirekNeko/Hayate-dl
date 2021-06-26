@@ -56,7 +56,7 @@ function getNumrPage(){
 				GM_setValue("iteraca", i);
 				location.href="https://reader.hayate.eu/" + mangaData[1] + '/' + mangaData[2] + '/' + mangaData[3] + '/view#' + i;
 			}else{
-			alert("Musisz przejść na stronę nr 1, aby rozpocząć pobieranie");
+				alert("Musisz przejść na stronę nr 1, aby rozpocząć pobieranie");
 			}
         }
     });
