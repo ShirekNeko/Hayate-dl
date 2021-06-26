@@ -3,9 +3,8 @@
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  downloads images from hayate
-// @author       Deru
-// @match        https://reader.hayate.eu/*
-// @grant        none
+// @author       Shiro
+// @match        https://reader.hayate.eu/
 // @require      https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js
 // @grant        GM_getValue
