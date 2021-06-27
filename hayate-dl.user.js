@@ -1,85 +1,126 @@
 // ==UserScript==
-// @name         hayate download
+// @name         hayate-dl
 // @namespace    http://tampermonkey.net/
-// @version      0.1.2
-// @description  downloads images from hayate
+// @version      0.9
+// @description  Pobieranie mangi ze strony hayate.eu
 // @author       Shiro
 // @match        https://reader.hayate.eu/*
+// @match        https://hayate.eu/*
+// @require      https://code.jquery.com/jquery-3.6.0.min.js
+// @require      https://cdn.jsdelivr.net/npm/js-base64@3.6.0/base64.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
+// @grant        GM_addStyle
+// @run-at       document-start
 // ==/UserScript==
 
+//funkcja nadajaca styl
+GM_addStyle ( `
+    .btn_script{
+        position: relative;
+        display: block;
+        color: #f8f9fa;
+        height: 40px;
+        border-radius: 4px;
+        z-position: 12;
+        font-family: nunito sans,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol;
+        font-size: 16px;
+    }
 
-//funkcja zwraca nazwę, tom i rozdział mangi
-function getMangaData(urlToSplit=window.location.pathname){
-	let url_regex = /^(https|http):\/\/(.+)\/*$/;
+    #All{
+        background-color: #1ea63d;
+        border-color: #1ea63d;
+        left: 20px;
+        top: 5px;
+        width: 200px;
+    }
+
+    #Chapter{
+        background-color: #6f42c1;
+        border-color: #6f42c1;
+        left: 235px;
+        top:  0px;
+        width: 200px;
+    }
+` );
+//funkcja zwraca hash strony, tj #cyfra
+function getNumerPage(){
+    let url_regex = /^(https|http):\/\/(.+)\/*$/;
+	let url_path = window.location.hash;
+    return url_path;
+}
+
+//funkcja zwraca nazwę projektu
+function getMangaName(){
+    let url_regex = /^(https|http):\/\/(.+)\/*$/;
 	let url_path = window.location.pathname;
 	var mangaData = url_path.split("/");
     return mangaData;
 }
 
-//funkcja zwraca ilość stron w rozdziale
-function getNumrPage(){
-    var options = document.querySelectorAll(".right.nav-menu select option");
-    var lastOption = options[options.length - 1];
-    var lastPage = lastOption.innerHTML;
-    return lastPage;
+//funkcja zwraca nazwę hosta
+function getMangaHostName(){
+    let url_regex = /^(https|http):\/\/(.+)\/*$/;
+	let url_path = window.location.hostname;
+    var mangaURL = url_path.split("/");
+    return mangaURL;
 }
 
-//funkcja główna
+//funkcja wywołana na readerze dodająca przycisk pobierajacy całą mangę
+function handleMangaAllPage(){
+    var btnPlace = $(".single").first();
+    var btnCode = "<button id='All' class='btn_script' style='margin-bottom: 15px;'>Pobierz całą mangę</button>";
+    btnPlace.html(btnPlace.html() + btnCode);
+
+    $("#All").on("click", function() {
+        var mangaName = getMangaName();
+        var saveProject = [mangaName[2],"true"];
+        GM_setValue("project",saveProject);
+        location.href = "https://reader.hayate.eu/" + mangaName[2]+ '/1/1/view#1';
+    });
+}
+
+function handleMangaChapterPage(){
+    var btnPlace = $(".single").first();
+    var btnCode = "<button id='Chapter' class='btn_script' style='margin-bottom: 15px; z-position: 12;'>Pobierz rozdział mangi</button>";
+    btnPlace.html(btnPlace.html() + btnCode);
+}
+
+function downloaderManga(){
+    var mangaPathName = getMangaName();
+    var currentPage = getNumerPage();
+    setTimeout(function() {
+        let element = document.querySelector('.page');
+        html2canvas(element, {
+            onrendered: function(canvas) {
+                var imageData = canvas.toDataURL("image/png");
+                window.saveAs(imageData, mangaPathName[1] +`_vol` + mangaPathName[2] + `chap` + mangaPathName[3] + `_page-${currentPage[1]}.png`);
+            }
+        });
+        var i = currentPage[1];
+        i++;
+        alert(i);
+        var urf ="https://reader.hayate.eu/" + mangaPathName[1]+ '/' + mangaPathName[2]+ '/' + mangaPathName[3]+ '/view#' + i;
+        location.href = urf;
+    }, 1000);
+    setTimeout(function() {
+        downloaderManga();
+    }, 1000);
+}
+
 (function() {
     'use strict';
-	let currentPage = document.querySelector(".right.nav-menu select").selectedIndex + 1;
 
-    const downloadKey = "q";
+    handleMangaAllPage();
+   // handleMangaChapterPage();
+    var mangaPathName = getMangaName();
+    var mangaHostName = getMangaHostName();
+    var mangaIf = GM_getValue("project");
+    if(mangaHostName == "reader.hayate.eu" && mangaIf[1] == "true" && mangaIf[0] == mangaPathName[1]){
+        downloaderManga(mangaPathName);
+   }
 
-
-    document.addEventListener('keydown', function(event) {
-        if (event.ctrlKey && event.key === downloadKey) {
-            if(currentPage == 1) {
-				let data = GM_setValue( "downloading", "true");
-				var i = 1;
-				let element = document.querySelector('.page');
-				let mangaData = getMangaData();
-				let pageNumber = getNumrPage();
-
-				html2canvas(element, {
-				onrendered: function(canvas) {
-					var imageData = canvas.toDataURL("image/png");
-					window.saveAs(imageData, mangaData[1] +`_vol` + mangaData[2] + `chap` + mangaData[3] + `_page-${currentPage}.png`);
-					}
-				});
-				i++;
-				GM_setValue("iteraca", i);
-				location.href="https://reader.hayate.eu/" + mangaData[1] + '/' + mangaData[2] + '/' + mangaData[3] + '/view#' + i;
-			}else{
-			alert("Musisz przejść na stronę nr 1, aby rozpocząć pobieranie");
-			}
-        }
-    });
-
-
-	if(GM_getValue("downloading") === "true" ){
-		let mangaData = getMangaData();
-		let pageNumber = getNumrPage();
-		setTimeout(function() {
-			html2canvas(element, {
-				onrendered: function(canvas) {
-					var imageData = canvas.toDataURL("image/png");
-					window.saveAs(imageData, mangaData[1] +`_vol` + mangaData[2] + `chap` + mangaData[3] + `_page-${currentPage}.png`);
-				}
-			});
-			let element = document.querySelector('.page');
-			var i = GM_getValue("iteracja");
-			i++;
-			GM_setValue("iteraca", i);
-			if (i > currentPage){
-				let data = GM_setValue( "downloading", "false");
-			}
-			location.href="https://reader.hayate.eu/" + mangaData[1] + '/' + mangaData[2] + '/' + mangaData[3] + '/view#' + i;
-		}, 1000);
-	}
 })();
