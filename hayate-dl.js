@@ -29,7 +29,6 @@ GM_addStyle ( `
         font-family: nunito sans,-apple-system,BlinkMacSystemFont,segoe ui,Roboto,helvetica neue,Arial,sans-serif,apple color emoji,segoe ui emoji,segoe ui symbol;
         font-size: 16px;
     }
-
     #All{
         background-color: #1ea63d;
         border-color: #1ea63d;
@@ -37,7 +36,6 @@ GM_addStyle ( `
         top: 5px;
         width: 200px;
     }
-
     #Chapter{
         background-color: #6f42c1;
         border-color: #6f42c1;
@@ -82,13 +80,14 @@ function handleMangaAllPage(){
         location.href = "https://reader.hayate.eu/" + mangaName[2]+ '/1/1/view#1';
     });
 }
-
+// przyszła funkcjonalność - 
 function handleMangaChapterPage(){
     var btnPlace = $(".single").first();
     var btnCode = "<button id='Chapter' class='btn_script' style='margin-bottom: 15px; z-position: 12;'>Pobierz rozdział mangi</button>";
     btnPlace.html(btnPlace.html() + btnCode);
 }
 
+//Funkcja, która ściąga karty mangi
 function downloaderManga(){
     var mangaPathName = getMangaName();
     var currentPage = getNumerPage();
@@ -111,6 +110,7 @@ function downloaderManga(){
     }, 1000);
 }
 
+//funkcja główna
 (function() {
     'use strict';
 
