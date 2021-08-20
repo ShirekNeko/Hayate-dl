@@ -119,7 +119,6 @@ function downloaderManga() {
     var mangaHostName = getMangaHostName();
     var mangaIf = GM_getValue("project");
     if (mangaHostName == "reader.hayate.eu" && mangaIf[1] == "true" && mangaIf[0] == mangaPathName[1]) {
-        alert(mangaIf[0]);
         downloaderManga();
     }
 
