@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hayate-dl
 // @namespace    http://tampermonkey.net/
-// @version      0.9.1
+// @version      1.0.0
 // @description  Pobieranie mangi ze strony hayate.eu
 // @author       Shiro
 // @match        https://reader.hayate.eu/*
@@ -22,6 +22,7 @@ GM_addStyle(`
     .btn_script{
         position: relative;
         display: block;
+        align-items: center;
         color: #f8f9fa;
         height: 40px;
         border-radius: 4px;
@@ -37,6 +38,7 @@ GM_addStyle(`
         width: 200px;
     }
     #Chapter{
+        position: relative;
         background-color: #6f42c1;
         border-color: #6f42c1;
         left: 235px;
@@ -44,10 +46,13 @@ GM_addStyle(`
         width: 200px;
     }
 `);
+
+
 // funkcja zwraca hash strony, tj #cyfra
 function getNumerPage() {
     let url_path = window.location.hash;
-    return url_path;
+    var mangaData = url_path.split("#");
+    return mangaData;
 }
 
 // funkcja zwraca nazwę projektu
@@ -80,9 +85,8 @@ function handleMangaAllPage() {
 
 // przyszła funkcjonalność -
 function handleMangaChapterPage() {
-    var btnPlace = $(".single").first();
-    var btnCode = "<button id='Chapter' class='btn_script' style='margin-bottom: 15px; z-position: 12;'>Pobierz rozdział mangi</button>";
-    btnPlace.html(btnPlace.html() + btnCode);
+    var a = 0;
+
 }
 
 // Funkcja, która ściąga karty mangi
@@ -93,21 +97,15 @@ function downloaderManga() {
         let element = document.querySelector('.page');
         html2canvas(element).then(canvas => {
             var imageData = canvas.toDataURL("image/png");
-            window.saveAs(imageData, mangaPathName[1] + `_vol` + mangaPathName[2] + `chap` + mangaPathName[3] + `_page-${
-                currentPage[1]
-            }.png`);
+            window.saveAs(imageData, mangaPathName[1] +`_vol` + mangaPathName[2] + `chap` + mangaPathName[3] + `_page-${currentPage[1]}.png`);
+            $('.nav-arrow.nav-right').click();
         });
-        var i = currentPage[1];
-        i++;
-        var urf = "https://reader.hayate.eu/" + mangaPathName[1] + '/' + mangaPathName[2] + '/' + mangaPathName[3] + '/view#' + i;
-        location.href = urf;
-
     }, 3000);
     setTimeout(function () {
         downloaderManga();
     }, 3000);
-
 }
+
 
 // funkcja główna
 (function () {
